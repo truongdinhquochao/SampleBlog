@@ -2,7 +2,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SampleBlog.Api;
 using SampleBlog.Core.Domain.Identity;
+using SampleBlog.Core.Repositories;
+using SampleBlog.Core.SeedWorks;
 using SampleBlog.Infrastructure;
+using SampleBlog.Infrastructure.Repositories;
+using SampleBlog.Infrastructure.SeedWorks;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -36,6 +40,25 @@ builder.Services.Configure<IdentityOptions>(options =>
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = false;
 });
+
+//Add service container
+builder.Services.AddScoped(typeof(IRepository<,>), typeof(RepositoryBase<,>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+//Add bussiness services and repos
+var services = typeof(PostRepository).Assembly.GetTypes()
+    .Where(x => x.GetInterfaces().Any(i => i.Name == typeof(IRepository<,>).Name)
+    && !x.IsAbstract && x.IsClass && !x.IsGenericType);
+
+foreach (var service in services)
+{
+    var allInterfaces = service.GetInterfaces();
+    var directInterface = allInterfaces.Except(allInterfaces.SelectMany(t => t.GetInterfaces())).FirstOrDefault();
+    if (directInterface != null)
+    {
+        builder.Services.Add(new ServiceDescriptor(directInterface, service, ServiceLifetime.Scoped));
+    }
+}
 
 //Default config for ASP.NET Core
 builder.Services.AddControllers();
