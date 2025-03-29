@@ -12,8 +12,8 @@ using SampleBlog.Infrastructure;
 namespace SampleBlog.Infrastructure.Migrations
 {
     [DbContext(typeof(SampleBlogContext))]
-    [Migration("20250329080410_Initial")]
-    partial class Initial
+    [Migration("20250329083716_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -480,7 +480,7 @@ namespace SampleBlog.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("AppUsers");
                 });
 #pragma warning restore 612, 618
         }
