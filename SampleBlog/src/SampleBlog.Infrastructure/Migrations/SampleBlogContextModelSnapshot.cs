@@ -477,7 +477,7 @@ namespace SampleBlog.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("AppUsers");
                 });
 #pragma warning restore 612, 618
         }
